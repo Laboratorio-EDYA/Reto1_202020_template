@@ -62,9 +62,8 @@ def compareRecordIds (recordA, recordB):
     return -1
 
 
-
 def loadCSVFile (file, cmpfunction):
-    lst=lt.newList("ARRAY_LIST", cmpfunction)
+    lst=lt.newList("SINGLE_LINKED", cmpfunction)
     dialect = csv.excel()
     dialect.delimiter=";"
     try:
@@ -77,11 +76,15 @@ def loadCSVFile (file, cmpfunction):
     return lst
 
 
-def loadMovies ():
-    lst = loadCSVFile("theMoviesdb/movies-small.csv",compareRecordIds) 
+def loadMovies (file):
+    lst = loadCSVFile(file,compareRecordIds) 
     print("Datos cargados, " + str(lt.size(lst)) + " elementos cargados")
     return lst
 
+def menu_cargar():
+    print('Menu de opciones: ')
+    print('1. Cargar Archivos Pequeños')
+    print('2. Cargar Archivos Grandes')
 
 def main():
     """
@@ -97,9 +100,25 @@ def main():
         printMenu() #imprimir el menu de opciones en consola
         inputs =input('Seleccione una opción para continuar\n') #leer opción ingresada
         if len(inputs)>0:
-
+            lista1 = {}
+            lista2 = {}
             if int(inputs[0])==1: #opcion 1
-                lstmovies = loadMovies()
+                continuar = True
+                while continuar == True:
+                    menu_cargar()
+                    opcion = input('Digite su opción: ')
+                    if opcion == '1':
+                        lista1 = loadMovies('Data/themoviesdb/MoviesCastingRaw-small.csv')
+                        lista2 = loadMovies('Data/themoviesdb/SmallMoviesDetailsCleaned.csv')
+                        continuar = False
+                    elif opcion == '2':
+                        lista1 = loadMovies('Data/themoviesdb/AllMoviesCastingRaw.csv')
+                        lista2 = loadMovies('Data/themoviesdb/AllMoviesDetailsCleaned.csv')
+                        continuar = False
+                    else:
+                        print('Opcion no valida')
+                        menu_cargar()
+                        opcion = input('Digite su opción: ')
 
             elif int(inputs[0])==2: #opcion 2
                 pass
