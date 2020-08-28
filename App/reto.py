@@ -95,8 +95,9 @@ def conocerUnDirector(lst1, lst2, name):
         average = round(retorno['average']/size,2)
     except:
         return -1
+
     t1_stop = process_time() #tiempo final
-    print("Tiempo de ejecución ",t1_stop-t1_start," segundos") 
+    print("Tiempo de ejecución ",t1_stop-t1_start," segundos ") 
     return (movies,average,size)
 
 def main():
@@ -128,8 +129,8 @@ def main():
                         lista2 = loadMovies('Data/themoviesdb/AllMoviesDetailsCleaned.csv')
                         continuar = False
                     else:
-                        print('Opcion no valida')
-                        print('')
+                        print('Opcion no valida: ')
+                        print('')      
 
             elif int(inputs[0])==2: #opcion 2
                 if lt.size(lista1) == 0 or lt.size(lista2) == 0:
