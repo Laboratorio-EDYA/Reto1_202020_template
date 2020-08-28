@@ -27,7 +27,6 @@ import config
 from ADT import list as lt
 
 
-
 def cmpfunction (element1, element2):
     if element1['book_id'] == element2['book_id']:
         return 0
