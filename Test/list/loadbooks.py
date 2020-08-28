@@ -58,7 +58,7 @@ print ('Loading books')
 booksfile = cf.data_dir + 'GoodReads/books.csv'
 loadCSVFile (booksfile, lst_books)
 print (lst_books['size'])
-#printList (lst_books)
+printList (lst_books)
 
 
 print ('Loading tags')
