@@ -30,7 +30,6 @@ import csv
 
 from ADT import lss as lt
 from DataStructures import listiterator as it
-from DataStructures import liststructure as lt
 from Sorting import insertionsort as iss
 from Sorting import selectionsort as sss
 from Sorting import quicksort as qs
@@ -64,12 +63,9 @@ def filtrar_por_genero(lst,criteria):
 
 def crear_ranking(lst):
     t1_start = process_time() #tiempo inicial
-    copy1 = lst.copy()
-    copy2 = lst.copy()
-    print(lt.size(copy1))
-    ranking_votes = qs.quickSort(copy1,compareRecordVotes)
+    ranking_votes = qs.quickSort(lst.copy(),compareRecordVotes).copy()
     print(True)
-    ranking_average = qs.quickSort(copy2,compareRecordAverage)
+    ranking_average = qs.quickSort(lst.copy(),compareRecordAverage).copy()
     print(True)
     t1_stop = process_time() #tiempo final
     print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
@@ -79,7 +75,6 @@ def crear_ranking_de_genero(criteria, lst):
     t1_start = process_time() #tiempo inicial
     filtered1 = filtrar_por_genero(lst.copy(),criteria)
     filtered2 = filtrar_por_genero(lst.copy(),criteria)
-    print(lt.size(filtered1))
     if filtered1 != -1:
         ranking_votes = qs.quickSort(filtered1,compareRecordVotes)
         ranking_average = qs.quickSort(filtered2,compareRecordAverage)
@@ -106,8 +101,8 @@ def compareRecordIds (recordA, recordB):
         return 1
     return -1
 
-def loadCSVFile (file, cmpfunction):
-    lst=lt.newList("SINGLE_LINKED", cmpfunction)
+def loadCSVFile (file, cmpfunction,type):
+    lst=lt.newList(type, cmpfunction)
     dialect = csv.excel()
     dialect.delimiter=";"
     try:
@@ -119,8 +114,8 @@ def loadCSVFile (file, cmpfunction):
         print("Hubo un error con la carga del archivo")
     return lst
 
-def loadMovies (file):
-    lst = loadCSVFile(file,compareRecordIds) 
+def loadMovies (file,type):
+    lst = loadCSVFile(file,compareRecordIds,type) 
     print("Datos cargados, " + str(lt.size(lst)) + " elementos cargados")
     return lst
 
@@ -173,23 +168,24 @@ def main():
                     menu_cargar()
                     opcion = input('Digite su opción: ')
                     if opcion == '1':
-                        lista1 = loadMovies('Data/themoviesdb/MoviesCastingRaw-small.csv')
-                        lista2 = loadMovies('Data/themoviesdb/SmallMoviesDetailsCleaned.csv')
+                        lista1 = loadMovies('Data/themoviesdb/MoviesCastingRaw-small.csv','SINGLE_LINKED')
+                        lista2 = loadMovies('Data/themoviesdb/SmallMoviesDetailsCleaned.csv','SINGLE_LINKED')
+                        lista2_a = loadMovies('Data/themoviesdb/SmallMoviesDetailsCleaned.csv','ARRAY_LIST')
                         continuar = False
                     elif opcion == '2':
-                        lista1 = loadMovies('Data/themoviesdb/AllMoviesCastingRaw.csv')
-                        lista2 = loadMovies('Data/themoviesdb/AllMoviesDetailsCleaned.csv')
+                        lista1 = loadMovies('Data/themoviesdb/AllMoviesCastingRaw.csv','SINGLE_LINKED')
+                        lista2 = loadMovies('Data/themoviesdb/AllMoviesDetailsCleaned.csv','SINGLE_LINKED')
                         continuar = False
                     else:
                         print('Opcion no valida: ')
                         print('')      
 
             elif int(inputs[0])==2: #opcion 2
-                if lt.size(lista1) == 0 or lt.size(lista2) == 0:
+                if lt.size(lista1) == 0 or lt.size(lista2_a) == 0:
                     print('¡Debe cargar los archivos primero!')
                 else:
                     x=int(input('Digite la longitud del ranking: '))+1
-                    data = crear_ranking(lista2.copy())
+                    data = crear_ranking(lista2_a.copy())
                     print('El ranking por votos es:')
                     for i in range(1,x):
                         print(i,'- ',lt.getElement(data[0],i)['original_title'],lt.getElement(data[0],i)['vote_count'])    

@@ -55,6 +55,5 @@ def sort (lst, lo, hi, lessequalfunction):
 
 def quickSort(lst, lessequalfunction):
     sort (lst, 1, lt.size(lst), lessequalfunction)
-    print(lst)
     return lst
 
