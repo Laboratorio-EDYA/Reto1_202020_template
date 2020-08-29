@@ -28,10 +28,11 @@ import config as cf
 import sys
 import csv
 
-from ADT import list as lt
+from ADT import lss as lt
 from DataStructures import listiterator as it
 from DataStructures import liststructure as lt
-
+from Sorting import insertionsort as iss
+from Sorting import selectionsort as sss
 from time import process_time 
 
 def printMenu():
@@ -44,8 +45,48 @@ def printMenu():
     print("3- Conocer un director")
     print("4- Conocer un actor")
     print("5- Entender un genero")
-    print("6- Crear ranking")
+    print("6- Crear ranking por genero")
     print("0- Salir")
+
+
+
+def filtrar_por_genero(lst,criteria):
+    iterador=it.newIterator(lst)
+    lista = lt.newList()
+    while it.hasNext(iterador)==True:
+        dato = it.next(iterador)
+        if dato['genres'].lower().strip()==criteria.lower().strip():
+            lt.addLast(lista,dato)
+    if lt.size(lista) > 0:
+        retorno = lista.copy()
+    else:
+        retorno = -1
+    return retorno
+
+def crear_ranking_de_genero(criteria, lst):
+    t1_start = process_time() #tiempo inicial
+    filtered1 = filtrar_por_genero(lst.copy(),criteria)
+    filtered2 = filtrar_por_genero(lst.copy(),criteria)
+    if filtered1 != -1:
+        ranking_votes = sss.selectionSort (filtered1,compareRecordVotes)
+        ranking_average = sss.selectionSort(filtered2,compareRecordAverage)
+    t1_stop = process_time() #tiempo final
+    print("Tiempo de ejecución ",t1_stop-t1_start," segundos ") 
+    return (ranking_votes,ranking_average)
+
+
+def compareRecordVotes (recordA, recordB):
+    if int(recordA['vote_count']) > int(recordB['vote_count']):
+        return True
+    else:
+        return False
+
+def compareRecordAverage (recordA, recordB):
+    if float(recordA['vote_average']) > float(recordB['vote_average']):
+        return True
+    else:
+        return False
+         
 
 def compareRecordIds (recordA, recordB):
     if int(recordA['id']) == int(recordB['id']):
@@ -159,16 +200,29 @@ def main():
                     print('¡Debe cargar los archivos primero!')
                 else:
                     pass
-            elif int(inputs[0])==3: #opcion 5
+            elif int(inputs[0])==5: #opcion 5
                 if lt.size(lista1) == 0 or lt.size(lista2) == 0:
                     print('¡Debe cargar los archivos primero!')
                 else:
                     pass
-            elif int(inputs[0])==4: #opcion 6
+            elif int(inputs[0])==6: #opcion 6
                 if lt.size(lista1) == 0 or lt.size(lista2) == 0:
                     print('¡Debe cargar los archivos primero!')
                 else:
-                    pass
+                    x=int(input('Digite la longitud del ranking: '))+1
+                    y=input('Digite el genero a filtrar: ')
+                    data = crear_ranking_de_genero(y,lista2)
+                    if data == -1:
+                        print('El genero no existe')
+                    else:
+                        print('El ranking por votos para el genero ',y,' es:')
+                        for i in range(1,x):
+                            print(i,'- ',lt.getElement(data[0],i)['original_title'],lt.getElement(data[0],i)['vote_count'])    
+                        input('Digite enter para ver el siguiente ranking ---------->:')
+                        print('El ranking por promedio para el genero ',y,' es:')
+                        for i in range(1,x):
+                            print(i,'- ',lt.getElement(data[1],i)['original_title'],lt.getElement(data[1],i)['vote_average'])
+                
             elif int(inputs[0])==0: #opcion 0, salir
                 sys.exit(0)
             else:
