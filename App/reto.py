@@ -30,10 +30,10 @@ import config as cf
 import sys
 import csv
 
-from ADT import list as lt
+from ADT import lss as lt
 from DataStructures import listiterator as it
 from DataStructures import liststructure as lt
-
+from Sorting import quicksort as qs
 from time import process_time 
 
 
@@ -48,11 +48,47 @@ def printMenu():
     print("3- Conocer un director")
     print("4- Conocer un actor")
     print("5- Entender un genero")
-    print("6- Crear ranking")
+    print("6- Crear ranking por genero")
     print("0- Salir")
 
 
 
+def filtrar_por_genero(lst,criteria):
+    iterador=it.newIterator(lst)
+    lista = lt.newList()
+    while it.hasNext(iterador)==True:
+        dato = it.next(iterador)
+        if dato['genre'].lower().strip()==criteria:
+            lt.addLast(lista,dato)
+    if lt.size(lista) > 0:
+        retorno = lista
+    else:
+        retorno = -1
+    return retorno
+
+def crear_ranking_de_genero(criteria, lst):
+    filtered = filtrar_por_genero(lst)
+    qs.quickSort(filtered,compareRecordVotes)
+    ranking_votes = filtered.copy()
+    qs.quickSort(filtered,compareRecordAverage)
+    ranking_average = filtered.copy()
+    return (ranking_votes,ranking_average)
+
+
+def compareRecordVotes (recordA, recordB):
+    if int(recordA['vote_count']) == int(recordB['vote_count']):
+        return 0
+    elif int(recordA['vote_count']) > int(recordB['vote_count']):
+        return 1
+    return -1
+
+def compareRecordAverage (recordA, recordB):
+    if int(recordA['vote_average']) == int(recordB['vote_average']):
+        return 0
+    elif int(recordA['vote_average']) > int(recordB['vote_average']):
+        return 1
+    return -1
+         
 
 def compareRecordIds (recordA, recordB):
     if int(recordA['id']) == int(recordB['id']):
@@ -67,12 +103,13 @@ def loadCSVFile (file, cmpfunction):
     dialect = csv.excel()
     dialect.delimiter=";"
     try:
-        with open(  cf.data_dir + file, encoding="utf-8") as csvfile:
+        with open(cf.data_dir + file, encoding="utf-8-sig") as csvfile:
             row = csv.DictReader(csvfile, dialect=dialect)
             for elemento in row: 
                 lt.addLast(lst,elemento)
     except:
         print("Hubo un error con la carga del archivo")
+    print(lst)
     return lst
 
 
@@ -133,9 +170,20 @@ def main():
                 pass
 
             elif int(inputs[0])==4: #opcion 6
-                pass
-
-
+                
+                x=input('Digite la longitud del ranking: ')
+                y=input('Digite el genero a filtrar: ')
+                data = crear_ranking_de_genero(y,lista2)
+                if data == -1:
+                    print('El genero no existe')
+                else:
+                    print('El ranking por votos para el genero ',y,' es:')
+                    for i in range(x):
+                        print(x+1,'- ',lt.getElement(data[0],x)['original_title'])    
+                    input('Digite enter para ver el siguiente ranking ---------->:')
+                    print('El ranking por promedio para el genero ',y,' es:')
+                    for i in range(x):
+                        print(x+1,'- ',lt.getElement(data[1],x)['original_title'])
             elif int(inputs[0])==0: #opcion 0, salir
                 sys.exit(0)
                 

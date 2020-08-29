@@ -19,7 +19,7 @@
  """
 
 
-import DataStructures.listnode as node 
+import listnode as node 
 
 
 """
