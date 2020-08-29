@@ -170,7 +170,8 @@ def main():
                 pass
 
             elif int(inputs[0])==4: #opcion 6
-                
+                'No'
+
                 x=input('Digite la longitud del ranking: ')
                 y=input('Digite el genero a filtrar: ')
                 data = crear_ranking_de_genero(y,lista2)
