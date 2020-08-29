@@ -20,7 +20,7 @@
  """
 
 import config as cf
-from ADT import list as lt
+from ADT import lss as lt
 
 """
 Implementa el algoritmo de ordenamiento Quicksort
