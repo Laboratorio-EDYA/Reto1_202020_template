@@ -53,7 +53,7 @@ def sort (lst, lo, hi, lessequalfunction):
     sort (lst, lo, pivot-1, lessequalfunction)
     sort (lst, pivot+1, hi, lessequalfunction)
 
-
 def quickSort(lst, lessequalfunction):
     sort (lst, 1, lt.size(lst), lessequalfunction)
+    return lst
 
