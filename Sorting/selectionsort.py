@@ -20,7 +20,7 @@
  """
 
 import config as cf
-from ADT import lss as lt
+from ADT import list as lt
 
 def selectionSort (lst, lessfunction): 
     size =  lt.size(lst) 
