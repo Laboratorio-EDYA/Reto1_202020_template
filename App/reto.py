@@ -227,7 +227,7 @@ def main():
                     for i in range(1,x):
                         print(i,'- ',lt.getElement(data1,i)['original_title'],lt.getElement(data1,i)['vote_count'])    
                     data2 = crear_ranking(lst,compareRecordAverage)
-                    input('Digite enter para ver el siguiente ranking ---------->:')
+                    input('Presiona Enter para ver el siguiente ranking ..... ')
                     print('El ranking por promedio es:')
                     for i in range(1,x):
                         print(i,'- ',lt.getElement(data2,i)['original_title'],lt.getElement(data2,i)['vote_average'])
@@ -244,14 +244,15 @@ def main():
                     if data == -1:
                         print('No se encuentra el director')
                     else:
-                        print('Nombre de las peliculas que ha dirigido ',name)
+                        print('Nombre de las peliculas que ha dirigido ',name.title())
                         for i in range(data[2]):
                             print(i+1,'- ',data[0][i])
                         print("El director ha dirigido ",data[2]," películas")
                         print('Promedio de votación de las peliculas: ',data[1])
-                        input('Presione enter para continuar -------------------------->:')
+                        # input('Presiona Enter para continuar .....')
                     t1_stop = process_time() #tiempo final
-                    print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")       
+                    print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
+                    input('Presiona Enter para continuar .....')    
 
             elif int(inputs)==4: #opcion 4
                 if lt.size(lista1) == 0 or lt.size(lista2) == 0:
@@ -306,7 +307,7 @@ def main():
                         print('El ranking por votos para el genero ',y,' es:')
                         for i in range(1,x):
                             print(i,'- ',lt.getElement(data[0],i)['original_title'],lt.getElement(data[0],i)['vote_count'])    
-                        input('Digite enter para ver el siguiente ranking ---------->:')
+                        input('Presiona Enter para ver el siguiente ranking ..... ')
                         print('El ranking por promedio para el genero ',y,' es:')
                         for i in range(1,x):
                             print(i,'- ',lt.getElement(data[1],i)['original_title'],lt.getElement(data[1],i)['vote_average'])
