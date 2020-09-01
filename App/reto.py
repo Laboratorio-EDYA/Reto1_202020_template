@@ -30,6 +30,7 @@ import csv
 
 from ADT import list as lt
 from DataStructures import listiterator as it
+from DataStructures import arraylist as a
 from Sorting import insertionsort as iss
 from Sorting import selectionsort as sss
 from Sorting import quicksort as qs
@@ -68,26 +69,17 @@ def crear_ranking(lst,function):
     while it.hasNext(iterador)==True:
         dato = it.next(iterador)
         lt.addLast(lista,dato)
-    t1_start = process_time() #tiempo inicial
-    ms.mergesort(lista.copy(),function)
-    t1_stop = process_time() #tiempo final
-    print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
     if lt.size(lista) > 0:
+        ms.mergesort(lista,function)
         return lista
     else:
         return -1
 
 def compareRecordVotes (recordA, recordB):
-    if int(recordA['vote_count']) > int(recordB['vote_count']):
-        return True
-    else:
-        return False
+    return int(recordA['vote_count']) > int(recordB['vote_count'])
 
 def compareRecordAverage (recordA, recordB):
-    if float(recordA['vote_average']) > float(recordB['vote_average']):
-        return True
-    else:
-        return False
+    return float(recordA['vote_average']) > float(recordB['vote_average'])
 
 def compareRecordIds (recordA, recordB):
     if int(recordA['id']) == int(recordB['id']):
@@ -120,7 +112,6 @@ def menu_cargar():
     print('2. Cargar Archivos Grandes')
 
 def conocerUnDirector(lst1, lst2, name):
-    t1_start = process_time() #tiempo inicial
     retorno = {'ids': [], 'movies_names': [], 'average': 0.0}
     it_list1 = it.newIterator(lst1)
     while it.hasNext(it_list1) == True:
@@ -137,30 +128,55 @@ def conocerUnDirector(lst1, lst2, name):
         average = round(retorno['average']/size,2)
     except:
         return -1
-
-    t1_stop = process_time() #tiempo final
-    print("Tiempo de ejecución ",t1_stop-t1_start," segundos ") 
     return (movies,average,size)
 
-def entender_genero(lst2,genre):
-    t1_start = process_time() #tiempo inicial
-    retorno = {'movies_names': [], 'average': 0.0}
-    it_list2 = it.newIterator(lst2)
-    while it.hasNext(it_list2) == True:
-        data = it.next(it_list2)
-        if data['genres'].lower().strip() == genre:
-            retorno['movies_names'].append(data['original_title'])
-    for each_movie in retorno['movies_names']:
-        pos = lt.isPresent(lst2,{'id': each_movie})
-        retorno['movies_names'].append(lt.getElement(lst2,pos)['original_title'])
-        retorno['average'] += float(lt.getElement(lst2,pos)['vote_average'])
-    try:
-        size = len(retorno['movies_names'])
-        movies = retorno['movies_names']
-        average = round(retorno['average']/size,2)
-        return average
-    except:
+def conocer_un_actor(lista1,lista2,name):
+    retorno = {'ids':[],'movies_names':[], 'average':0.0, 'director_name':[]}
+    it_list1 = it.newIterator(lista1)
+    mayor = ""
+    res = 0
+    while it.hasNext(it_list1) == True:
+        data = it.next(it_list1)
+        for i in range(1,6):
+            if data['actor'+str(i)+'_name'].lower().strip()==name:
+                retorno['ids'].append(data["id"])
+                retorno["director_name"].append(data["director_name"])
+    for i in retorno['ids']:
+        pos = lt.isPresent(lista2,{'id': i})
+        retorno['movies_names'].append(lt.getElement(lista2,pos)['original_title'])
+        retorno['average'] += float(lt.getElement(lista2,pos)['vote_average'])
+    for i in retorno['director_name']:
+        if retorno['director_name'].count(i) > res:
+            res = retorno['director_name'].count(i)
+            mayor = i
+    if len(retorno['ids']) > 0:
+        return (retorno['movies_names'],round(retorno['average']/len(retorno['ids']),2),mayor)
+    else:
         return -1
+
+def entender_genero(lista,genre):
+    lst = filtrar_por_genero(lista,genre)
+    i = 0
+    iterador = it.newIterator(lst)
+    while it.hasNext(iterador) == True:
+        dato = it.next(iterador)
+        i += float(dato["vote_count"])
+    if lt.size(lst) > 0:
+        promedio = round(i / lt.size(lst),2)
+        return (lst, promedio)
+    else:
+        return -1
+
+def longitudRanking():
+    try:
+        x = int(input('Digite la longitud del ranking: '))
+    except:
+        print('¡Digite un NÚMERO ENTERO!')
+        x = int(input('Digite la longitud del ranking: '))
+    while x < 10:
+        print('Eliga un valor valido mayor o igual a 10...')
+        x = int(input('Digite la longitud del ranking: '))
+    return x
 
 def main():
     """
@@ -177,11 +193,12 @@ def main():
         printMenu() #imprimir el menu de opciones en consola
         inputs = input('Seleccione una opción para continuar: \n') #leer opción ingresada
         if len(inputs)>0:
-            if int(inputs[0])==1: #opcion 1
+            if int(inputs)==1: #opcion 1
                 continuar = True
                 while continuar == True:
                     menu_cargar()
                     opcion = input('Digite su opción: ')
+                    t1_start = process_time() #tiempo inicial
                     if opcion == '1':
                         lista1 = loadMovies('Data/themoviesdb/MoviesCastingRaw-small.csv','SINGLE_LINKED')
                         lista2 = loadMovies('Data/themoviesdb/SmallMoviesDetailsCleaned.csv','SINGLE_LINKED')
@@ -190,16 +207,20 @@ def main():
                     elif opcion == '2':
                         lista1 = loadMovies('Data/themoviesdb/AllMoviesCastingRaw.csv','SINGLE_LINKED')
                         lista2 = loadMovies('Data/themoviesdb/AllMoviesDetailsCleaned.csv','SINGLE_LINKED')
+                        lista2_a = loadMovies('Data/themoviesdb/AllMoviesDetailsCleaned.csv','ARRAY_LIST')
                         continuar = False
                     else:
                         print('Opcion no valida: ')
-                        print('')      
+                        print('')
+                    t1_stop = process_time() #tiempo final
+                    print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")       
 
-            elif int(inputs[0])==2: #opcion 2
+            elif int(inputs)==2: #opcion 2
                 if lt.size(lista1) == 0 or lt.size(lista2_a) == 0:
                     print('¡Debe cargar los archivos primero!')
                 else:
-                    x=int(input('Digite la longitud del ranking: '))+1
+                    t1_start = process_time() #tiempo inicial
+                    x = longitudRanking() + 1
                     lst = lista2_a.copy()
                     data1 = crear_ranking(lst,compareRecordVotes)
                     print('El ranking por votos es:')
@@ -210,51 +231,73 @@ def main():
                     print('El ranking por promedio es:')
                     for i in range(1,x):
                         print(i,'- ',lt.getElement(data2,i)['original_title'],lt.getElement(data2,i)['vote_average'])
+                    t1_stop = process_time() #tiempo final
+                    print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")       
                     
-            elif int(inputs[0])==3: #opcion 3
+            elif int(inputs)==3: #opcion 3
                 if lt.size(lista1) == 0 or lt.size(lista2) == 0:
                     print('¡Debe cargar los archivos primero!')
                 else:
+                    t1_start = process_time() #tiempo inicial
                     name = input('Ingrese el nombre del director: ').lower().strip()
                     data = conocerUnDirector(lista1,lista2,name)
                     if data == -1:
                         print('No se encuentra el director')
                     else:
                         print('Nombre de las peliculas que ha dirigido ',name)
-                        print(data[2])
                         for i in range(data[2]):
-                            print(i+1,'. ',data[0][i])
+                            print(i+1,'- ',data[0][i])
+                        print("El director ha dirigido ",data[2]," películas")
                         print('Promedio de votación de las peliculas: ',data[1])
-                        print('Para una cantidad de ',data[2],' peliculas')
                         input('Presione enter para continuar -------------------------->:')
+                    t1_stop = process_time() #tiempo final
+                    print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")       
 
-            elif int(inputs[0])==4: #opcion 4
+            elif int(inputs)==4: #opcion 4
                 if lt.size(lista1) == 0 or lt.size(lista2) == 0:
                     print('¡Debe cargar los archivos primero!')
                 else:
-                    pass
+                    t1_start = process_time() #tiempo inicial
+                    name = str(input("Digita el nombre del actor a buscar: ")).lower().strip()
+                    data = conocer_un_actor(lista1, lista2, name)
+                    if data == -1:
+                        print("¿Ese actor existe? ")
+                    else:
+                        print(name.title()," ha actuado en las siguientes películas: ")
+                        for i in range(0,len(data[0])):
+                            print(i+1,'- ',data[0][i])
+                        print("El actor ha actuado en ",len(data[0])," películas")
+                        print("El promedio de las películas actuadas por",name.title()," es de ",data[1])
+                        print("El director con el que ha hecho más colaboraciones es ",data[2])
+                    t1_stop = process_time() #tiempo final
+                    print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")       
 
-            elif int(inputs[0])==5: #opcion 5
+
+            elif int(inputs)==5: #opcion 5
                 if lt.size(lista2) == 0:
                     print('¡Debe cargar los archivos primero!')
                 else:
+                    t1_start = process_time() #tiempo inicial
                     genre = str(input("Ditgita el género que deseas buscar: ")).lower().strip()
                     data = entender_genero(lista2,genre)
                     if data == -1:
                         print("Asegurate de haber escrito bien el género")
                     else:
-                        print("Se han encontrado stas péliculas con el género " ,genre,": ")
+                        print("Se han encontrado estas péliculas con el género " ,genre,": ")
                         for i in range(1,(lt.size(data[0])) + 1):
                             print(i,'- ',lt.getElement(data[0],i)['original_title'])
-                            print(entender_genero(lista2,genre))
-                    pass
+                        print("Se encontraron ", lt.size(data[0]), " péliculas")
+                        print("El promedio de votación es de " ,data[1])
+                    t1_stop = process_time() #tiempo final
+                    print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
 
-            elif int(inputs[0])==6: #opcion 6
+            elif int(inputs)==6: #opcion 6
                 if lt.size(lista1) == 0 or lt.size(lista2_a) == 0:
                     print('¡Debe cargar los archivos primero!')
                 else:
-                    x=int(input('Digite la longitud del ranking: '))+1
-                    y=input('Digite el genero a filtrar: ')
+                    t1_start = process_time() #tiempo inicial
+                    x = longitudRanking() + 1
+                    y = input('Digite el genero a filtrar: ')
                     lst = filtrar_por_genero(lista2_a,y)
                     data = [crear_ranking(lst,compareRecordVotes),crear_ranking(lst,compareRecordAverage)]
                     if data[0] == -1 or data[1] == -1:
@@ -267,7 +310,10 @@ def main():
                         print('El ranking por promedio para el genero ',y,' es:')
                         for i in range(1,x):
                             print(i,'- ',lt.getElement(data[1],i)['original_title'],lt.getElement(data[1],i)['vote_average'])
-            elif int(inputs[0])==0: #opcion 0, salir
+                    t1_stop = process_time() #tiempo final
+                    print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
+            
+            elif int(inputs)==0: #opcion 0, salir
                 sys.exit(0)
             else:
                 print('Eliga una opción  valida')
